@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-server/
+data/
+server/data/feeds.json
+screenshots/
+test-results/
+playwright-report/
+.env
+.env.local
+.DS_Store
+*.log
