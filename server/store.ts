@@ -18,6 +18,7 @@ export interface ReportStore {
   update(id: string, patch: { status?: ReportRecord['status']; note?: string }): Promise<ReportRecord | null>;
   remove(id: string): Promise<boolean>;
   clear(): Promise<void>;
+  findByUrl(url: string): Promise<ReportRecord | null>;
 }
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
@@ -80,6 +81,12 @@ class LocalStore implements ReportStore {
     if (next.length === reports.length) return false;
     await this.write(next);
     return true;
+  }
+
+  async findByUrl(url: string): Promise<ReportRecord | null> {
+    const reports = await this.read();
+    const report = reports.find((report) => report.url === url);
+    return report ?? null;
   }
 
   async clear(): Promise<void> {
@@ -194,6 +201,24 @@ class TursoStore implements ReportStore {
     const client = await this.client();
     const result = (await client.execute({ sql: 'DELETE FROM reports WHERE id = ?', args: [id] })) as { rowsAffected?: number };
     return (result.rowsAffected ?? 0) > 0;
+  }
+
+  async findByUrl(url: string): Promise<ReportRecord | null> {
+    await this.ready();
+    const client = await this.client();
+    const result = (await client.execute({ sql: 'SELECT * FROM reports WHERE url = ?', args: [url] })) as { rows: Record<string, unknown>[] };
+    if (!result.rows.length) return null;
+    return {
+      id: String(result.rows[0].id),
+      url: String(result.rows[0].url),
+      host: String(result.rows[0].host),
+      verdict: String(result.rows[0].verdict) as ReportRecord['verdict'],
+      score: Number(result.rows[0].score),
+      status: String(result.rows[0].status) as ReportRecord['status'],
+      note: String(result.rows[0].note ?? ''),
+      createdAt: String(result.rows[0].created_at),
+      updatedAt: String(result.rows[0].updated_at),
+    };
   }
 
   async clear(): Promise<void> {

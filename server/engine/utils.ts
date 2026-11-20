@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import ipaddr from 'ipaddr.js';
 import { parse as parseDomain } from 'tldts';
+import * as cheerio from 'cheerio';
 
 export function sha256(input: string | Buffer): string {
   return crypto.createHash('sha256').update(input).digest('hex');
@@ -148,6 +149,49 @@ export function redactUrl(url: string): string {
     return url.replace(/[?&]([^=]+)=([^&]+)/g, (match, key) =>
       /token|key|secret|session|auth|password/i.test(String(key)) ? `${match.split('=')[0]}=[redacted]` : match,
     );
+  }
+}
+
+export async function scrapeUrl(url: string): Promise<{
+  title: string;
+  description: string;
+  links: string[];
+  text: string;
+} | null> {
+  try {
+    const { safeFetch } = await import('./safeFetch.js');
+    const fetchResult = await safeFetch(url, {
+      maxRedirects: 2,
+      timeoutMs: 8000,
+      maxBytes: 2_000_000,
+    });
+    const $ = cheerio.load(fetchResult.body);
+    const title = ($('title').first().text() || '').trim().slice(0, 300);
+    const description = ($('meta[name="description"]').attr('content') || '').trim().slice(0, 400);
+    const links = $('a')
+      .map((_, element) => $(element).attr('href') || '')
+      .get()
+      .filter(Boolean)
+      .slice(0, 20)
+      .map((href) => {
+        try {
+          return new URL(href, fetchResult.finalUrl).toString();
+        } catch {
+          return href;
+        }
+      });
+    const text = $('body')
+      .clone()
+      .children()
+      .remove()
+      .end()
+      .text()
+      .replace(/\s+/g, ' ')
+      .trim();
+    return { title, description, links, text };
+  } catch (error) {
+    console.error('[scrape] failed:', error);
+    return null;
   }
 }
 

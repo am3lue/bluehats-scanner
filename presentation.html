@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlueHats Scanner Presentation</title>
+  <style>
+    :root {
+      --primary: #1a1a2e;
+      --secondary: #16213e;
+      --accent: #e94560;
+      --text: #fafafa;
+      --muted: #7d8da1;
+      --background: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--primary);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .slide-container {
+      width: 960px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      min-height: 700px;
+    }
+
+    .slide {
+      background: var(--background);
+      color: var(--text);
+      padding: 60px 40px;
+      position: relative;
+      width: 100%;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 20px 60px rgba(0,0,0,0.3);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .slide h1 {
+      font-size: 32px;
+      font-weight: 400;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .slide h2 {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--primary);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .slide p {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .slide ul {
+      margin-left: 24px;
+      margin-bottom: 24px;
+    }
+
+    .slide li {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .slide li::before {
+      content: '→';
+      position: absolute;
+      left: -20px;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .slide .bullet {
+      margin-left: 12px;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .slide .footnote {
+      position: absolute;
+      bottom: 20px;
+      right: 40px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .slide .license-tag {
+      position: absolute;
+      top: 20px;
+      right: 40px;
+      font-size: 10px;
+      color: var(--accent);
+      background: rgba(233, 69, 96, 0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+    }
+
+    .nav-controls {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      width: 40px;
+      height: 80px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: var(--text);
+      font-size: 24px;
+      cursor: pointer;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-controls:hover {
+      background: rgba(0,0,0,0.7);
+    }
+
+    .nav-controls.prev {
+      left: 20px;
+    }
+
+    .nav-controls.next {
+      right: 20px;
+    }
+
+    .slide-dots {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+
+    .slide-dot {
+      width: 12px;
+      height: 12px;
+      background: rgba(255,255,255,0.3);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .slide-dot.active {
+      background: var(--accent);
+    }
+
+    .slide-dot:hover {
+      background: var(--text);
+    }
+
+    /* Slide specific colors */
+    .slide-title { color: var(--accent); }
+    .slide-ideation { border-left: 4px solid var(--accent); }
+    .slide-problem { border-left: 4px solid #4a90e2; }
+    .slide-solution { border-left: 4px solid #77dd77; }
+    .slide-features { border-left: 4px solid #f0a500; }
+    .slide-howworks { border-left: 4px solid #ff6b6b; }
+    .slide-tech { border-left: 4px solid #4ecdc4; }
+    .slide-license { border-left: 4px solid #ffe66d; color: var(--primary); background: var(--primary); }
+    .slide-conclusion { border-left: 4px solid #a855f7; }
+    .slide-qa { border-left: 4px solid #38bdf8; }
+
+    @media (max-width: 1024px) {
+      .slide-container {
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+      }
+      .slide {
+        padding: 40px 20px;
+      }
+      h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container" id="slideContainer">
+    <!-- Slide 1: Title -->
+    <div class="slide slide-title slide-ideation" data-slide="1">
+      <h1>BlueHats Scanner</h1>
+      <p>Explainable Phishing, Brand Impersonation & Online Scam Detection</p>
+      <div class="footnote">Built with transparency</div>
+    </div>
+
+    <!-- Slide 2: Ideation -->
+    <div class="slide slide-ideation" data-slide="2">
+      <h2>Ideation & Origin Story</h2>
+      <p>When I was making this, only me and GOD knew. But for now, ONLY GOD knows.</p>
+      <ul>
+        <li>Concept born from gap in explainable scam detection</li>
+        <li>Vision: flag threats + explain <em>why</em> they're threats</li>
+        <li>License philosophy: honest about knowledge limits</li>
+      </ul>
+    </div>
+
+    <!-- Slide 3: Problem -->
+    <div class="slide slide-problem" data-slide="3">
+      <h2>Problem Statement</h2>
+      <ul>
+        <li><strong>Phishing:</strong> Growing threat landscape, users click without understanding risks</li>
+        <li><strong>Brand Impersonation:</strong> Increasingly sophisticated attacks</li>
+        <li><strong>Explainability Gap:</strong> Most detectors just say "unsafe" without rationale</li>
+        <li><strong>Legal Concerns:</strong> Developers need cover for AI/ML decisions</li>
+      </ul>
+    </div>
+
+    <!-- Slide 4: Solution -->
+    <div class="slide slide-solution" data-slide="4">
+      <h2>Solution Overview</h2>
+      <p>BlueHats Scanner: full-stack web application with explainable detection + user-friendly interface.</p>
+      <ul>
+        <li><strong>Frontend:</strong> React + Vite</li>
+        <li><strong>Backend:</strong> Express + Node.js</li>
+        <li><strong>Database:</strong> LibSQL/Turso</li>
+        <li><strong>Scripts:</strong> Feeds, SEO, visual analysis utilities</li>
+      </ul>
+    </div>
+
+    <!-- Slide 5: Features -->
+    <div class="slide slide-features" data-slide="5">
+      <h2>Key Features</h2>
+      <ul>
+        <li>Phishing URL detection & analysis</li>
+        <li>Brand impersonation recognition</li>
+        <li>Online scam pattern recognition</li>
+        <li>Explainable AI/ML insights</li>
+        <li>Real-time scanning & reporting</li>
+        <li>Feed updates for threat intelligence</li>
+        <li>SEO & shell analysis capabilities</li>
+      </ul>
+    </div>
+
+    <!-- Slide 6: Architecture -->
+    <div class="slide" data-slide="6">
+      <h2>Architecture & Components</h2>
+      <p>System architecture connecting all modules.</p>
+      <ul>
+        <li><strong>Frontend:</strong> React components, hooks, pages, styles</li>
+        <li><strong>Backend:</strong> Express API, server routes, engine modules</li>
+        <li><strong>Scripts:</strong> Prerender, SEO shells, feed updates, visual analysis</li>
+        <li><strong>Data Flow:</strong> User input → API analysis → Explainable output → UI display</li>
+      </ul>
+    </div>
+
+    <!-- Slide 7: How It Works -->
+    <div class="slide slide-howworks" data-slide="7">
+      <h2>How It Works (Step-by-Step)</h2>
+      <ol>
+        <li><strong>Input:</strong> User provides URL, email content, or file to scan</li>
+        <li><strong>Analysis:</strong> Backend engine runs multiple checks (tldts, cheerio, custom patterns)</li>
+        <li><strong>Scoring:</strong> System generates risk score with explanations</li>
+        <li><strong>Output:</strong> Detailed report showing threat categories, reasoning, confidence levels</li>
+        <li><strong>Feedback:</strong> User can report false positives/negatives → feeds update</li>
+      </ol>
+    </div>
+
+    <!-- Slide 8: Tech Stack -->
+    <div class="slide slide-tech" data-slide="8">
+      <h2>Technology Highlights</h2>
+      <ul>
+        <li><strong>Node.js</strong> >=20 with TypeScript safety</li>
+        <li><strong>Express</strong> for robust API layer</li>
+        <li><strong>React 19</strong> with modern hooks</li>
+        <li><strong>Vite</strong> for fast dev/build cycles</li>
+        <li><strong>Playwright</strong> for e2e testing</li>
+        <li><strong>Vitest</strong> for unit testing</li>
+        <li><strong>ESLint + Prettier</strong> for code quality</li>
+      </ul>
+    </div>
+
+    <!-- Slide 9: Development -->
+    <div class="slide" data-slide="9">
+      <h2>Development & Verification</h2>
+      <p>Available scripts for the full development lifecycle.</p>
+      <ul>
+        <li><code>dev</code>: Run both API & web dev servers concurrently</li>
+        <li><code>build</code>: Production build + SEO scripts</li>
+        <li><code>typecheck</code>: TypeScript validation</li>
+        <li><code>lint</code>: ESLint checks</li>
+        <li><code>format</code>: Prettier formatting</li>
+        <li><code>verify</code>: Full pipeline (typecheck + lint + test + e2e)</li>
+        <li><code>test</code>: Unit tests with Vitest</li>
+        <li><code>test:e2e</code>: End-to-end tests with Playwright</li>
+      </ul>
+    </div>
+
+    <!-- Slide 10: License -->
+    <div class="slide slide-license" data-slide="10">
+      <h2>License & Liability Protection</h2>
+      <div class="license-tag">"Only GOD knows" LICENSE</div>
+      <p>When I was making this, only me and GOD knew. But for now, ONLY GOD knows.</p>
+      <ul>
+        <li><strong>AS IS:</strong> No warranty, express or implied</li>
+        <li><strong>Use at Your Own Risk:</strong> Users assume all risk</li>
+        <li><strong>No Endorsement:</strong> No fitness guarantees implied</li>
+        <li><strong>Limitation of Liability:</strong> Maximum legal protection for damages</li>
+        <li>Educational/research purposes only</li>
+      </ul>
+    </div>
+
+    <!-- Slide 11: Use Cases -->
+    <div class="slide" data-slide="11">
+      <h2>Use Cases</h2>
+      <ul>
+        <li><strong>Individual users:</strong> Check suspicious links before clicking</li>
+        <li><strong>Developers:</strong> Integrate scanning into own apps via API</li>
+        <li><strong>Security teams:</strong> Bulk URL analysis & reporting</li>
+        <li><strong>Researchers:</strong> Study phishing patterns with explainable data</li>
+      </ul>
+    </div>
+
+    <!-- Slide 12: Roadmap -->
+    <div class="slide" data-slide="12">
+      <h2>Roadmap / Future</h2>
+      <ul>
+        <li>Expand detection models (ML/AI integration)</li>
+        <li>Add browser extension support</li>
+        <li>Multi-language UI</li>
+        <li>API public beta</li>
+        <li>Community-driven feed contributions</li>
+      </ul>
+    </div>
+
+    <!-- Slide 13: Conclusion -->
+    <div class="slide slide-conclusion" data-slide="13">
+      <h2>Conclusion</h2>
+      <p>BlueHats Scanner bridges the gap between detection and explanation.</p>
+      <ul>
+        <li>Provides legal protection via custom license</li>
+        <li>Open-source-friendly tech stack</li>
+        <li>Ready for further development and community adoption</li>
+        <li><em>Remember:</em> "ONLY GOD knows" – but now you have a tool to understand the rest!</li>
+      </ul>
+    </div>
+
+    <!-- Slide 14: Q&A -->
+    <div class="slide slide-qa" data-slide="14">
+      <h2>Q&A</h2>
+      <p>Open floor for questions.</p>
+      <ul>
+        <li>Contact info / social links</li>
+        <li>Discussion of implementation details</li>
+        <li>Future feature suggestions</li>
+      </ul>
+      <div class="footnote">Thank you for attending</div>
+    </div>
+  </div>
+
+  <button class="nav-controls prev" aria-label="Previous slide" id="prevBtn">&#10094;</button>
+  <button class="nav-controls next" aria-label="Next slide" id="nextBtn">&#10095;</button>
+
+  <div class="slide-dots" id="slideDots"></div>
+
+  <script>
+    // Initialize slides
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      // Wrap around
+      if (index >= totalSlides) index = 0;
+      if (index < 0) index = totalSlides - 1;
+
+      currentSlide = index;
+
+      // Update accessibility attributes
+      slides.forEach((slide, i) => {
+        slide.setAttribute('aria-hidden', i !== index);
+        slide.setAttribute('data-state', i === index ? 'active' : 'inactive');
+      });
+
+      // Update navigation buttons
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === totalSlides - 1;
+
+      // Update dots
+      updateDots(index);
+    }
+
+    function updateDots(index) {
+      document.querySelectorAll('.slide-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+      });
+    }
+
+    // Navigation event listeners
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      showSlide(currentSlide + 1);
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      showSlide(currentSlide - 1);
+    });
+
+    // Dot navigation
+    document.querySelectorAll('.slide-dot').forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        showSlide(i);
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') showSlide(currentSlide + 1);
+      if (e.key === 'ArrowLeft') showSlide(currentSlide - 1);
+    });
+
+    // Initialize - show first slide
+    showSlide(0);
+  </script>
+</body>
+</html>

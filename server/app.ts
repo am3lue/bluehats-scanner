@@ -125,7 +125,22 @@ export function createApp(): express.Express {
         res.status(400).json({ error: { message: parsed.error.issues[0]?.message ?? 'Invalid request.' } });
         return;
       }
+      const url = parsed.data.url!;
+      // Fallback: check if this URL has already been scanned and stored
+      const existing = await getStore().findByUrl(url);
+      if (existing) {
+        res.json({ fromCache: true, ...existing });
+        return;
+      }
       const result = await runScan(parsed.data);
+      // Store the new scan result in the database for future fallbacks
+      await getStore().add({
+        url,
+        host: new URL(url).hostname,
+        verdict: result.verdict,
+        score: result.score,
+        note: '',
+      });
       res.json(result);
     } catch (error) {
       next(error);
